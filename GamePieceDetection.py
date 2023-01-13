@@ -3,13 +3,13 @@ import keyboard
 import math
 
 #create a video capture
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
 bounds = 10
 
-color = 153
+colorBlueUnsaturated = 125
 
 while True:
     #read frame from the camera
@@ -24,20 +24,24 @@ while True:
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     #only show things between certain saturations
-    mask = cv2.inRange(img, (0, 255*1/2, 50), (360, 255, 255))
+    mask = cv2.inRange(img, (0, 0, 50), (360, 255, 255))
 
-    if keyboard.is_pressed('q'):
-        color += 1
-        print(color)
+    if keyboard.is_pressed('d'):
+        colorBlueUnsaturated += 1
+        print(colorBlueUnsaturated)
+
+    if keyboard.is_pressed('a'):
+        colorBlueUnsaturated -= 1
+        print(colorBlueUnsaturated)
 
     #only show things between color range
-    mask2 = cv2.inRange(img, (color - bounds, 0, 0), (color + bounds, 255, 255))
+    mask2 = cv2.inRange(img, (colorBlueUnsaturated - bounds, 0, 0), (colorBlueUnsaturated + bounds, 255, 255))
 
     #show both masks at once, only shows pixels picked up by both masks
     mask3 = cv2.bitwise_and(mask, mask2)
 
     #improve accuracy of the mask detection
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(5,5))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(3,3))
     mask3 = cv2.erode(mask3, kernel)
     mask3 = cv2.dilate(mask3, kernel)
 
