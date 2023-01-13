@@ -3,7 +3,7 @@ import keyboard
 import math
 
 #create a video capture
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
