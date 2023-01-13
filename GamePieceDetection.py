@@ -9,14 +9,16 @@ cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
 bounds = 10
 
-num = 120
+color = 153
 
 while True:
     #read frame from the camera
     _, img = cap.read()
 
+    #resize camera, used later with contours
     img = cv2.resize(img, (800,500))
 
+    #image without masks
     initImg = img
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -25,22 +27,21 @@ while True:
     mask = cv2.inRange(img, (0, 255*1/2, 50), (360, 255, 255))
 
     if keyboard.is_pressed('q'):
-        num += 1
-        print(num)
+        color += 1
+        print(color)
 
     #only show things between color range
-    mask2 = cv2.inRange(img, (num - bounds, 0, 0), (num + bounds, 255, 255))
+    mask2 = cv2.inRange(img, (color - bounds, 0, 0), (color + bounds, 255, 255))
 
+    #show both masks at once, only shows pixels picked up by both masks
     mask3 = cv2.bitwise_and(mask, mask2)
 
+    #improve accuracy of the mask detection
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(5,5))
-
     mask3 = cv2.erode(mask3, kernel)
-    mask3 = cv2.erode(mask3, kernel)
-
-    mask3 = cv2.dilate(mask3, kernel)
     mask3 = cv2.dilate(mask3, kernel)
 
+    #find countours, basically finding the edges of the game piece
     cnts = cv2.findContours(mask3.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for i in cnts[0]:
@@ -49,13 +50,15 @@ while True:
         cY = int((M["m01"] / M["m00"])) / 500
 
         initImg = cv2.circle(initImg,(math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
+        img = cv2.circle(initImg,(math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
 
         break
 
     img = cv2.bitwise_and(img, img, mask=mask3)
 
     #show the capture from camera
-    cv2.imshow("test", initImg)
+    cv2.imshow("image with masks", img)
+    cv2.imshow("initial image", initImg)
 
     #wait in milliseconds
     cv2.waitKey(5)
