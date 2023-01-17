@@ -1,10 +1,15 @@
 import cv2
 import keyboard
 import math
-import Network
+from networktables import NetworkTables
+import logging
 
-socket = Network.init()
-socket.send("Connection received by server.".encode(encoding="UTF-8"))
+logging.basicConfig(level=logging.DEBUG)
+
+NetworkTables.initialize()
+sd = NetworkTables.getTable("SmartDashboard")
+sd.putNumberArray("pos", {-1, -1, -1})
+sd.putNumber("rot", -1)
 
 #create a video capture
 cap = cv2.VideoCapture(2)
