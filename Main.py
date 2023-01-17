@@ -1,6 +1,10 @@
 import cv2
 import keyboard
 import math
+import Network
+
+socket = Network.init()
+socket.send("Connection received by server.".encode(encoding="UTF-8"))
 
 #create a video capture
 cap = cv2.VideoCapture(2)
