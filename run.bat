@@ -1,0 +1,1 @@
+docker run -v /dev/video0:/dev/video0 8e0b288011d8 python3 -m source.Main
