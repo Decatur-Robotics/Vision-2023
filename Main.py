@@ -1,18 +1,29 @@
-import cv2
-import keyboard
 import math
 from networktables import NetworkTables
 import logging
+from pupil_apriltags import Detector
+import cv2
 
+#Create the Apriltag Detector
+at_detector = Detector(
+   families="tag36h11 tag16h5",
+   nthreads=1,
+   quad_decimate=1.0,
+   quad_sigma=0.0,
+   refine_edges=1,
+   decode_sharpening=0.25,
+   debug=0
+)
+
+#Init NetworkTables
 logging.basicConfig(level=logging.DEBUG)
-
 NetworkTables.initialize()
 sd = NetworkTables.getTable("SmartDashboard")
 sd.putNumberArray("pos", {-1, -1, -1})
 sd.putNumber("rot", -1)
 
 #create a video capture
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
@@ -72,6 +83,16 @@ while True:
     #show the capture from camera
     cv2.imshow("image with masks", img)
     cv2.imshow("initial image", initImg)
+    
+    #Uncomment below two lines if reading from image file instead of camera
+    # img = cv2.imread('images\\IMG_0442.png', cv2.IMREAD_GRAYSCALE)
+    # cv2.imshow('img', img)
+
+    cv2.waitKey(0)
+    
+    #Detect the apriltags
+    response = at_detector.detect(img)
+    print(response)
 
     #wait in milliseconds
     cv2.waitKey(5)
