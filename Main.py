@@ -1,4 +1,5 @@
 import math
+import keyboard
 from networktables import NetworkTables
 import logging
 from pupil_apriltags import Detector
