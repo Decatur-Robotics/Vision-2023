@@ -97,3 +97,4 @@ while True:
 
     #wait in milliseconds
     cv2.waitKey(5)
+    #100 lines
