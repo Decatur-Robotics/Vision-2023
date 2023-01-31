@@ -15,15 +15,21 @@ at_detector = Detector(
    debug=0
 )
 
-#Uncomment below 5 lines if reading from image file instead of camera
-img = cv2.imread('images\\IMG_0823.png', cv2.IMREAD_GRAYSCALE)
-cv2.imshow('img', img)
+cap = cv2.VideoCapture(0)
 
-#Detect the apriltags
-response = at_detector.detect(img)
-print("\n")
-print(response)
-print("\nTags Detected: " + str(len(response)))
+while True:
+  _, img = cap.read()
+
+  cv2.imshow("Camera", img)
+
+  cv2.waitKey(5)
+
+
+
+
+#response = at_detector.detect(img)
+#print("\n", response, "\nTags detected:", len(response))
+
 
 # #Init NetworkTables
 # logging.basicConfig(level=logging.DEBUG)
@@ -75,7 +81,7 @@ print("\nTags Detected: " + str(len(response)))
 #     mask3 = cv2.erode(mask3, kernel)
 #     mask3 = cv2.dilate(mask3, kernel)
 
-#     #find countours, basically finding the edges of the game piece
+#     #find contours, basically finding the edges of the game piece
 #     cnts = cv2.findContours(mask3.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 #     for i in cnts[0]:
@@ -107,4 +113,3 @@ print("\nTags Detected: " + str(len(response)))
 
     #wait in milliseconds
     # cv2.waitKey(5)
-    #100 lines
