@@ -1,7 +1,5 @@
-import math
 from networktables import NetworkTables
 import logging
-import keyboard
 from pupil_apriltags import Detector
 import cv2
 import ast
@@ -51,14 +49,12 @@ while True:
     print("Tag", apriltags[i].tag_id, "\nX:", str(centerXY[0]), "\nY:", str(centerXY[1]))
     if (apriltags[i].tag_id >= 1 and apriltags[i].tag_id <= 3) or apriltags[i].tag_id == 5:
       img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 320, int(centerXY[1]) + 240), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
-      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3, 2)
+      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 2/3, (0, 0, 255), 3, 2)
     elif (apriltags[i].tag_id >= 6 and apriltags[i].tag_id <= 8) or apriltags[i].tag_id == 4:
       img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 320, int(centerXY[1]) + 240), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 6, 2)
-      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3, 2)
+      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 2/3, (255, 0, 0), 3, 2)
 
   cv2.imshow("Camera", img)
-
-  #print(len(apriltags))
 
   cv2.waitKey(5)
 
