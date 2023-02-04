@@ -4,6 +4,8 @@ import logging
 import keyboard
 from pupil_apriltags import Detector
 import cv2
+import ast
+import re
 
 #Create the Apriltag Detector
 
@@ -26,6 +28,7 @@ at_detector = Detector(
 #Tag size in meters
 tag_size = 0.1524
 
+#cap is 640 pixels by 480 pixels
 cap = cv2.VideoCapture(1)
 
 while True:
@@ -41,7 +44,17 @@ while True:
     print("\nApriltags:")
 
   for i in range(len(apriltags)):
-    print("Tag", apriltags[i].tag_id, "center:", apriltags[i].center)
+    centerXY = ast.literal_eval((re.sub(" +", " ", ((str(apriltags[i].center).replace("[", "")).replace("]", "")).strip())).replace(" ", ", "))
+    centerXY = list(centerXY)
+    centerXY[0] = centerXY[0] - 320
+    centerXY[1] = centerXY[1] - 240
+    print("Tag", apriltags[i].tag_id, "\nX:", str(centerXY[0]), "\nY:", str(centerXY[1]))
+    if (apriltags[i].tag_id >= 1 and apriltags[i].tag_id <= 3) or apriltags[i].tag_id == 5:
+      img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 320, int(centerXY[1]) + 240), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
+      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3, 2)
+    elif (apriltags[i].tag_id >= 6 and apriltags[i].tag_id <= 8) or apriltags[i].tag_id == 4:
+      img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 320, int(centerXY[1]) + 240), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 6, 2)
+      img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 320, int(centerXY[1]) + 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3, 2)
 
   cv2.imshow("Camera", img)
 
