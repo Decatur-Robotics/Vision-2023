@@ -48,7 +48,7 @@ while True:
     centerXY = list(centerXY)
     centerXY[0] = centerXY[0] - 320
     centerXY[1] = centerXY[1] - 240
-    print("Tag", apriltags[i].tag_id, "\nX:", str(centerXY[0]), "\nY:", str(centerXY[1]))
+    print(" Tag:", apriltags[i].tag_id, "\n  X:", str(centerXY[0]), "\n  Y:", str(centerXY[1]))
     if (apriltags[i].tag_id >= 1 and apriltags[i].tag_id <= 3) or apriltags[i].tag_id == 5:
       img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 300, int(centerXY[1]) + 260), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
       img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 300, int(centerXY[1]) + 300), cv2.FONT_HERSHEY_SIMPLEX, 2/3, (0, 0, 255), 3, 2)
