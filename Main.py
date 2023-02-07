@@ -56,8 +56,22 @@ while True:
       img = cv2.putText(img, str(apriltags[i].tag_id), (int(centerXY[0]) + 300, int(centerXY[1]) + 260), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 6, 2)
       img = cv2.putText(img, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) + 300, int(centerXY[1]) + 300), cv2.FONT_HERSHEY_SIMPLEX, 2/3, (255, 0, 0), 3, 2)
 
-    rioComms.send(tableName, "Tag " + str(apriltags[i].tag_id) + " X", centerXY[0])
-    rioComms.send(tableName, "Tag " + str(apriltags[i].tag_id) + " Y", centerXY[1])
+    rioComms.send("apriltags", "Tag " + str(apriltags[i].tag_id) + " X", centerXY[0])
+    rioComms.send("apriltags", "Tag " + str(apriltags[i].tag_id) + " Y", centerXY[1])
+
+  rioComms.send("apriltags", "Tags", len(apriltags))
+
+  apriltagIDs = []
+  for i in range(len(apriltags)):
+    apriltagIDs.append(apriltags[i].tag_id)
+
+  for i in range(8):
+    if apriltagIDs.count(i+1):
+      tagVisible = 1
+    else:
+      tagVisible = 0
+
+    rioComms.send("apriltags", "Tag " + str(i + 1) + " Visible", tagVisible)
 
   cv2.imshow("Camera", img)
 
