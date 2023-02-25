@@ -59,6 +59,20 @@ while True:
     rioComms.send("apriltags", "Tag " + str(apriltags[i].tag_id) + " X", centerXY[0])
     rioComms.send("apriltags", "Tag " + str(apriltags[i].tag_id) + " Y", centerXY[1])
 
+
+
+    print(apriltags[i].corners)
+
+    cornersString = str(apriltags[i].corners).replace("[", "").replace("]", "").strip()
+    cornersString = ''.join(cornersString.splitlines())
+    cornersString = re.sub(" +", " ", cornersString)
+    cornersXYValues = list(cornersString.split(" "))
+
+    tagWidth = abs(float(cornersXYValues[4]) - float(cornersXYValues[6]))
+
+    rioComms.send("apriltags", "Tag" + str(apriltags[i].tag_id) + "Width", tagWidth)
+
+
   rioComms.send("apriltags", "Tags", len(apriltags))
 
   apriltagIDs = []
@@ -66,7 +80,7 @@ while True:
     apriltagIDs.append(apriltags[i].tag_id)
 
   for i in range(8):
-    if apriltagIDs.count(i+1):
+    if apriltagIDs.count(i+1) > 0:
       tagVisible = 1
     else:
       tagVisible = 0
