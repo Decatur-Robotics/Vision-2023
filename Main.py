@@ -63,10 +63,7 @@ while True:
 
     print(apriltags[i].corners)
 
-    cornersString = str(apriltags[i].corners).replace("[", "").replace("]", "").strip()
-    cornersString = ''.join(cornersString.splitlines())
-    cornersString = re.sub(" +", " ", cornersString)
-    cornersXYValues = list(cornersString.split(" "))
+    cornersXYValues = list(re.sub(" +", " ", ''.join((str(apriltags[i].corners).replace("[", "").replace("]", "").strip()).splitlines())).split(" "))
 
     tagWidth = abs(float(cornersXYValues[4]) - float(cornersXYValues[6]))
 
