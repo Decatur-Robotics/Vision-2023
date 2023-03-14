@@ -16,7 +16,7 @@ cap = cv2.VideoCapture(1)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
-bounds = 10
+bounds = 50
 
 colorBlueUnsaturated = 125
 
@@ -33,7 +33,7 @@ while True:
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     #only show things between certain saturations
-    mask = cv2.inRange(img, (0, 0, 50), (360, 255, 255))
+    mask = cv2.inRange(img, (0, 0, 0), (360, 255, 255))
 
     if keyboard.is_pressed('d'):
         colorBlueUnsaturated += 1
@@ -44,7 +44,7 @@ while True:
         print(colorBlueUnsaturated)
 
     #only show things between color range
-    mask2 = cv2.inRange(img, (colorBlueUnsaturated - bounds, 0, 0), (colorBlueUnsaturated + bounds, 255, 255))
+    mask2 = cv2.inRange(img, (42 - bounds, 174 - bounds, 211 - bounds), (42 + bounds, 174 - bounds, 211 - bounds))
 
     #show both masks at once, only shows pixels picked up by both masks
     mask3 = cv2.bitwise_and(mask, mask2)
@@ -59,11 +59,12 @@ while True:
 
     for i in cnts[0]:
         M = cv2.moments(i)
+
         cX = int((M["m10"] / M["m00"])) / 800
         cY = int((M["m01"] / M["m00"])) / 500
 
-        initImg = cv2.circle(initImg,(math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
-        img = cv2.circle(initImg,(math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
+        initImg = cv2.circle(initImg, (math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
+        img = cv2.circle(initImg, (math.floor(cX * 800), math.floor(cY * 500)), 20, (0, 0, 255), -1)
 
         break
 

@@ -29,7 +29,7 @@ at_detector = Detector(
 tag_size = 0.1524
 
 #cap is 640 pixels by 480 pixels
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 while True:
   _, img = cap.read()
