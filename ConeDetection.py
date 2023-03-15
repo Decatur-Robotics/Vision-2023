@@ -49,9 +49,7 @@ while True:
     maxValue = max(cntsAreas)
 
     maxCntsIndex = cntsAreas.index(maxValue)
-
-    print(maxValue)
-
+    
     if maxValue > 2000:
       M = cv2.moments(cnts[0][maxCntsIndex])
 
