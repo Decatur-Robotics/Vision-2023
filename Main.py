@@ -64,6 +64,17 @@ while True:
 
       rioComms.send("cones", "Cone X", cX - 400)
       rioComms.send("cones", "Cone Y", cY - 250)
+      rioComms.send("cones", "Cone Visible", 1)
+
+    else:
+      rioComms.send("cones", "Cone X", 0)
+      rioComms.send("cones", "Cone Y", 0)
+      rioComms.send("cones", "Cone Visible", 0)
+
+  else:
+    rioComms.send("cones", "Cone X", 0)
+    rioComms.send("cones", "Cone Y", 0)
+    rioComms.send("cones", "Cone Visible", 0)
 
   cv2.imshow("initial image", initImg)
   cv2.imshow("masked image", mask3)
