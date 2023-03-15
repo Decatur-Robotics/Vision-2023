@@ -8,7 +8,6 @@ cap = cv2.VideoCapture(1)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
-
 while True:
   _, img = cap.read()
 
@@ -75,8 +74,5 @@ while True:
     rioComms.send("cones", "Cone X", 0)
     rioComms.send("cones", "Cone Y", 0)
     rioComms.send("cones", "Cone Visible", 0)
-
-  cv2.imshow("initial image", initImg)
-  cv2.imshow("masked image", mask3)
 
   cv2.waitKey(5)
