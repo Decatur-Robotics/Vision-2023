@@ -1,19 +1,16 @@
 import cv2
 from RioComms import RioComms
-import math
 
 rioComms = RioComms("10.40.26.2")
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
 while True:
   _, img = cap.read()
 
-  img = cv2.resize(img, (800, 500))
-
-  initImg = img
+  img = cv2.resize(img, (200, 124))
 
   img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -52,27 +49,19 @@ while True:
 
     maxCntsIndex = cntsAreas.index(maxValue)
 
-    if maxValue > 2000:
-      M = cv2.moments(cnts[0][maxCntsIndex])
+    M = cv2.moments(cnts[0][maxCntsIndex])
 
-      cX = int((M["m10"] / M["m00"]))
-      cY = int((M["m01"] / M["m00"]))
+    cX = int((M["m10"] / M["m00"]))
+    cY = int((M["m01"] / M["m00"]))
 
-      initImg = cv2.circle(initImg, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
-      initImg = cv2.drawContours(initImg, cnts[0][maxCntsIndex], -1, (0, 255, 0), 3)
+    #img = cv2.circle(img, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
+    #img = cv2.drawContours(img, cnts[0][maxCntsIndex], -1, (0, 255, 0), 3)
 
-      rioComms.send("cones", "Cone X", cX - 400)
-      rioComms.send("cones", "Cone Y", cY - 250)
-      rioComms.send("cones", "Cone Visible", 1)
-
-    else:
-      rioComms.send("cones", "Cone X", 0)
-      rioComms.send("cones", "Cone Y", 0)
-      rioComms.send("cones", "Cone Visible", 0)
+    rioComms.send("cones", "Cone X", cX - 100)
+    rioComms.send("cones", "Cone Y", cY - 62)
+    rioComms.send("cones", "Cone Visible", 1)
 
   else:
     rioComms.send("cones", "Cone X", 0)
     rioComms.send("cones", "Cone Y", 0)
     rioComms.send("cones", "Cone Visible", 0)
-
-  cv2.waitKey(5)
