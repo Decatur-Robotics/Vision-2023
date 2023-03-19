@@ -1,5 +1,8 @@
 import cv2
 from RioComms import RioComms
+import keyboard
+
+print("Initializing.")
 
 rioComms = RioComms("10.40.26.2")
 
@@ -7,7 +10,12 @@ cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
+print("Running loop.")
+
 while True:
+  if keyboard.is_pressed("z"):
+    exit()
+
   _, img = cap.read()
 
   img = cv2.resize(img, (200, 124))
