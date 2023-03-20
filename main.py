@@ -1,12 +1,13 @@
 import cv2
 from RioComms import RioComms
 import keyboard
+import math
 
 print("Initializing.")
 
 rioComms = RioComms("10.40.26.2")
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
@@ -18,7 +19,7 @@ while True:
 
   _, img = cap.read()
 
-  img = cv2.resize(img, (200, 124))
+  img = cv2.resize(img, (800, 500)) #200, 124
 
   img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -47,9 +48,9 @@ while True:
 
   coneCntsAreas = []
 
-  cubeMask1 = cv2.inRange(img, (0, 0, 0), (360, 255, 255))
+  cubeMask1 = cv2.inRange(img, (240, 0, 0), (320, 255, 255))
 
-  cubeMask2 = cv2.inRange(img, (0, 255, 0), (360, 255, 255))
+  cubeMask2 = cv2.inRange(img, (0, 0, 0), (360, 255, 255))
 
   cubeMask1 = cv2.medianBlur(cubeMask1, 25)
   cubeMask2 = cv2.medianBlur(cubeMask2, 25)
@@ -114,7 +115,7 @@ while True:
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
-    # img = cv2.circle(img, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
+    img = cv2.circle(img, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
     # img = cv2.drawContours(img, cubeCnts[0][maxcubeCntsIndex], -1, (0, 255, 0), 3)
 
     rioComms.send("cubes", "Cube X", cX - 100)
@@ -125,3 +126,8 @@ while True:
     rioComms.send("cubes", "Cube X", 0)
     rioComms.send("cubes", "Cube Y", 0)
     rioComms.send("cubes", "Cube Visible", 0)
+
+  cv2.imshow("image", img)
+  cv2.imshow("mask", coneMask1)
+
+  cv2.waitKey(5)
