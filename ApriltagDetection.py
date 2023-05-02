@@ -26,7 +26,7 @@ at_detector = Detector(
 )
 
 #Tag size in meters
-tag_size = 0.1524
+tagSize = 0.1524
 
 #cap is 640 pixels by 480 pixels
 cap = cv2.VideoCapture(1)

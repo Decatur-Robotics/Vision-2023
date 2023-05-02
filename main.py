@@ -81,15 +81,15 @@ while True:
   if len(coneCntsAreas) > 0:
     maxValue = max(coneCntsAreas)
 
-    maxconeCntsIndex = coneCntsAreas.index(maxValue)
+    maxConeCntsIndex = coneCntsAreas.index(maxValue)
 
-    M = cv2.moments(coneCnts[0][maxconeCntsIndex])
+    M = cv2.moments(coneCnts[0][maxConeCntsIndex])
 
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
     # img = cv2.circle(img, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
-    #img = cv2.drawContours(img, coneCnts[0][maxconeCntsIndex], -1, (0, 255, 0), 3)
+    #img = cv2.drawContours(img, coneCnts[0][maxConeCntsIndex], -1, (0, 255, 0), 3)
 
     rioComms.send("cones", "Cone X", cX - 100)
     rioComms.send("cones", "Cone Y", cY - 62)
@@ -108,15 +108,15 @@ while True:
   if len(cubeCntsAreas) > 0:
     maxValue = max(cubeCntsAreas)
 
-    maxcubeCntsIndex = cubeCntsAreas.index(maxValue)
+    maxCubeCntsIndex = cubeCntsAreas.index(maxValue)
 
-    M = cv2.moments(cubeCnts[0][maxcubeCntsIndex])
+    M = cv2.moments(cubeCnts[0][maxCubeCntsIndex])
 
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
     # img = cv2.circle(img, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
-    # img = cv2.drawContours(img, cubeCnts[0][maxcubeCntsIndex], -1, (0, 255, 0), 3)
+    # img = cv2.drawContours(img, cubeCnts[0][maxCubeCntsIndex], -1, (0, 255, 0), 3)
 
     rioComms.send("cubes", "Cube X", cX - 100)
     rioComms.send("cubes", "Cube Y", cY - 62)
