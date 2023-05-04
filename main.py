@@ -1,7 +1,7 @@
 import cv2
 from RioComms import RioComms
 import keyboard
-import math
+import time
 
 print("Initializing.")
 
@@ -14,6 +14,8 @@ cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 print("Running loop.")
 
 while True:
+  loopStartTime = time.time()
+
   if keyboard.is_pressed("z"):
     exit()
 
@@ -132,3 +134,5 @@ while True:
   # cv2.imshow("cube", cubeMask3)
   #
   # cv2.waitKey(5)
+
+  print("Looped in", (time.time() - loopStartTime), "seconds.")

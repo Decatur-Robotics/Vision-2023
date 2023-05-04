@@ -1,6 +1,7 @@
 import cv2
 from RioComms import RioComms
 import keyboard
+import time
 import threading
 
 print("Initializing.")
@@ -10,6 +11,9 @@ rioComms = RioComms("10.40.26.2")
 cap = cv2.VideoCapture(1)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
+
+cameraX = 120
+cameraY = 70
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, ksize=(15, 15))
 
@@ -65,8 +69,8 @@ def find_cone_position():
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
-    rioComms.send("cones", "Cone X", cX - 100)
-    rioComms.send("cones", "Cone Y", cY - 62)
+    rioComms.send("cones", "Cone X", cX - (cameraX / 2))
+    rioComms.send("cones", "Cone Y", cY - (cameraY / 2))
     rioComms.send("cones", "Cone Visible", 1)
 
   else:
@@ -89,8 +93,8 @@ def find_cube_position():
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
-    rioComms.send("cubes", "Cube X", cX - 100)
-    rioComms.send("cubes", "Cube Y", cY - 62)
+    rioComms.send("cubes", "Cube X", cX - (cameraX / 2))
+    rioComms.send("cubes", "Cube Y", cY - (cameraY / 2))
     rioComms.send("cubes", "Cube Visible", 1)
 
   else:
@@ -98,19 +102,23 @@ def find_cube_position():
     rioComms.send("cubes", "Cube Y", 0)
     rioComms.send("cubes", "Cube Visible", 0)
 
-coneHueMaskThread = threading.Thread(target=cone_hue_mask, args=(16, 25))
-coneSaturationMaskThread = threading.Thread(target=cone_saturation_mask, args=(180, 255))
-
-cubeHueMaskThread = threading.Thread(target=cube_hue_mask, args=(115, 135))
-cubeSaturationMaskThread = threading.Thread(target=cube_saturation_mask, args=(60, 230))
-
 print("Running loop.")
 
 while True:
+  loopStartTime = time.time()
+
   if keyboard.is_pressed("z"):
     exit()
 
-  _, img = cv2.cvtColor(cv2.resize(cap.read(), (200, 124)), cv2.COLOR_BGR2HSV)
+  _, img = cap.read()
+
+  img = cv2.cvtColor(cv2.resize(img, (cameraX, cameraY)), cv2.COLOR_BGR2HSV)
+
+  coneHueMaskThread = threading.Thread(target=cone_hue_mask, args=(16, 25))
+  coneSaturationMaskThread = threading.Thread(target=cone_saturation_mask, args=(180, 255))
+
+  cubeHueMaskThread = threading.Thread(target=cube_hue_mask, args=(115, 135))
+  cubeSaturationMaskThread = threading.Thread(target=cube_saturation_mask, args=(60, 230))
 
   coneHueMaskThread.start()
   coneSaturationMaskThread.start()
@@ -122,11 +130,13 @@ while True:
   cubeHueMaskThread.join()
   cubeSaturationMaskThread.join()
 
-  coneMaskMergeThread = threading.Thread(target=cone_mask_merge(), args=(coneHueMask, coneSaturationMask))
-  cubeMaskMergeThread = threading.Thread(target=cube_mask_merge(), args=(cubeHueMask, cubeSaturationMask))
+  coneMaskMergeThread = threading.Thread(target=cone_mask_merge, args=(coneHueMask, coneSaturationMask))
+  cubeMaskMergeThread = threading.Thread(target=cube_mask_merge, args=(cubeHueMask, cubeSaturationMask))
 
   coneMaskMergeThread.start()
   cubeMaskMergeThread.start()
 
   coneMaskMergeThread.join()
   cubeMaskMergeThread.join()
+
+  print("Looped in", (time.time() - loopStartTime), "seconds.")
