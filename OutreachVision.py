@@ -5,15 +5,19 @@ import math
 import numpy as np
 import ast
 import re
+import time
 
 print("Initializing.")
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
-cameraX = 960
-cameraY = 540
+#Scales resolution and window size
+cameraScaler = .8 # .8 for Renato's computer
+
+cameraX = int(960 * cameraScaler)
+cameraY = int(540 * cameraScaler)
 
 at_detector = Detector(
    families="tag16h5",
@@ -28,6 +32,8 @@ at_detector = Detector(
 print("Running loop.")
 
 while True:
+  startTime = time.time()
+
   if keyboard.is_pressed("z"):
     exit()
 
@@ -118,6 +124,7 @@ while True:
     initImg2 = cv2.drawContours(initImg2, i, -1, (0, 255, 0), 3)
 
   for i in range(len(apriltags)):
+    # Get the center from Apriltags
     centerXY = ast.literal_eval((re.sub(" +", " ", ((str(apriltags[i].center).replace("[", "")).replace("]", "")).strip())).replace(" ", ", "))
     centerXY = list(centerXY)
     initImg2 = cv2.putText(initImg2, str(apriltags[i].tag_id), (int(centerXY[0]) - 20, int(centerXY[1]) + 20), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
@@ -130,6 +137,11 @@ while True:
   unmaskedImgs = np.concatenate((initImg2, img), axis = 1)
 
   finalImg = np.concatenate((unmaskedImgs, maskedImgs), axis = 0)
+
+  elapsedTime = time.time() - startTime
+
+  # FPS counter
+  finalImg = cv2.putText(finalImg, str(round(1/elapsedTime)) + " FPS", (3, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3, 2)  
 
   cv2.imshow("Image", finalImg)
 
