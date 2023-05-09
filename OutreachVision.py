@@ -29,6 +29,9 @@ at_detector = Detector(
    debug=0
 )
 
+cv2.namedWindow("Image", cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty("Image", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
 print("Running loop.")
 
 while True:
