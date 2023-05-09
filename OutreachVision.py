@@ -14,7 +14,7 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 
 #Scales resolution and window size
-cameraScaler = .8 # .8 for Renato's computer
+cameraScaler = .6 # Changes the resolution
 
 cameraX = int(960 * cameraScaler)
 cameraY = int(540 * cameraScaler)
@@ -144,7 +144,7 @@ while True:
   elapsedTime = time.time() - startTime
 
   # FPS counter
-  finalImg = cv2.putText(finalImg, str(round(1/elapsedTime)) + " FPS", (3, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3, 2)  
+  finalImg = cv2.putText(finalImg, str(round(1/elapsedTime)) + " FPS", (int(4 * cameraScaler), int(45 * cameraScaler)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), int(5 * cameraScaler), 2)  
 
   cv2.imshow("Image", finalImg)
 
