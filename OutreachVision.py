@@ -1,6 +1,10 @@
 import cv2
+from pupil_apriltags import Detector
 import keyboard
 import math
+import numpy as np
+import ast
+import re
 
 print("Initializing.")
 
@@ -11,6 +15,16 @@ cap.set(cv2.CAP_PROP_EXPOSURE, -6)
 cameraX = 960
 cameraY = 540
 
+at_detector = Detector(
+   families="tag16h5",
+   nthreads=1,
+   quad_decimate=0.3,
+   quad_sigma=0.35,
+   refine_edges=1,
+   decode_sharpening=0.25,
+   debug=0
+)
+
 print("Running loop.")
 
 while True:
@@ -19,9 +33,17 @@ while True:
 
   _, img = cap.read()
 
-  img = cv2.resize(img, (cameraX, cameraY)) #200, 124
+  img = cv2.resize(img, (cameraX, cameraY))
 
-  initImg = img
+  initImg1 = img
+
+  initImg2 = img
+
+  imgGrayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+  apriltags = at_detector.detect(imgGrayscale)
+
+  apriltags = [x for x in apriltags if x.hamming == 0]
 
   img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -78,44 +100,37 @@ while True:
   for i in coneCnts[0]:
     M = cv2.moments(i)
 
-    coneCntsAreas.append(M["m00"])
-
-  if len(coneCntsAreas) > 0:
-    maxValue = max(coneCntsAreas)
-
-    maxConeCntsIndex = coneCntsAreas.index(maxValue)
-
-    M = cv2.moments(coneCnts[0][maxConeCntsIndex])
-
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
-    initImg = cv2.circle(initImg, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
-    initImg = cv2.putText(initImg, "Cone", (math.floor(cX), math.floor(cY) - 30), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 5)
-    initImg = cv2.drawContours(initImg, coneCnts[0][maxConeCntsIndex], -1, (0, 255, 0), 3)
+    initImg2 = cv2.putText(initImg2, "Cone", (math.floor(cX) - 20, math.floor(cY) + 20), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
+    initImg2 = cv2.putText(initImg2, str(str(math.floor(cX)) + ", " + str(math.floor(cY))), (math.floor(cX) - 20, math.floor(cY) + 60), cv2.FONT_HERSHEY_SIMPLEX, 2 / 3, (0, 0, 255), 3, 2)
+    initImg2 = cv2.drawContours(initImg2, i, -1, (0, 255, 0), 3)
 
   for i in cubeCnts[0]:
     M = cv2.moments(i)
 
-    cubeCntsAreas.append(M["m00"])
-
-  if len(cubeCntsAreas) > 0:
-    maxValue = max(cubeCntsAreas)
-
-    maxCubeCntsIndex = cubeCntsAreas.index(maxValue)
-
-    M = cv2.moments(cubeCnts[0][maxCubeCntsIndex])
-
     cX = int((M["m10"] / M["m00"]))
     cY = int((M["m01"] / M["m00"]))
 
-    initImg = cv2.circle(initImg, (math.floor(cX), math.floor(cY)), 20, (0, 0, 255), -1)
-    initImg = cv2.putText(initImg, "Cube", (math.floor(cX), math.floor(cY) - 30), cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255), 5)
-    initImg = cv2.drawContours(initImg, cubeCnts[0][maxCubeCntsIndex], -1, (0, 255, 0), 3)
+    initImg2 = cv2.putText(initImg2, "Cube", (math.floor(cX) - 20, math.floor(cY) + 20), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
+    initImg2 = cv2.putText(initImg2, str(str(math.floor(cX)) + ", " + str(math.floor(cY))), (math.floor(cX) - 20, math.floor(cY) + 60), cv2.FONT_HERSHEY_SIMPLEX, 2 / 3, (0, 0, 255), 3, 2)
+    initImg2 = cv2.drawContours(initImg2, i, -1, (0, 255, 0), 3)
 
-  cv2.imshow("image", img)
-  cv2.imshow("initial image", initImg)
-  cv2.imshow("cone", coneMask3)
-  cv2.imshow("cube", cubeMask3)
+  for i in range(len(apriltags)):
+    centerXY = ast.literal_eval((re.sub(" +", " ", ((str(apriltags[i].center).replace("[", "")).replace("]", "")).strip())).replace(" ", ", "))
+    centerXY = list(centerXY)
+    initImg2 = cv2.putText(initImg2, str(apriltags[i].tag_id), (int(centerXY[0]) - 20, int(centerXY[1]) + 20), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 6, 2)
+    initImg2 = cv2.putText(initImg2, str(int(centerXY[0])) + ", " + str(int(centerXY[1])), (int(centerXY[0]) - 20, int(centerXY[1]) + 60), cv2.FONT_HERSHEY_SIMPLEX, 2 / 3, (0, 0, 255), 3, 2)
+
+  coneMask3 = cv2.bitwise_and(initImg1, initImg1, mask=coneMask3)
+  cubeMask3 = cv2.bitwise_and(initImg1, initImg1, mask=cubeMask3)
+
+  maskedImgs = np.concatenate((cubeMask3, coneMask3), axis = 1)
+  unmaskedImgs = np.concatenate((initImg2, img), axis = 1)
+
+  finalImg = np.concatenate((unmaskedImgs, maskedImgs), axis = 0)
+
+  cv2.imshow("Image", finalImg)
 
   cv2.waitKey(5)
